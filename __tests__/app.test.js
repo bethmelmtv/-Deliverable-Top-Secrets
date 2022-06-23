@@ -11,10 +11,23 @@ const aUser = {
   password: '1234567',
 };
 
+const registerAndLogin = async (userProps = {}) => {
+  const password = userProps.password ?? aUser.password;
+  const agent = request.agent(app);
+  const user = await UserService.create({ ...aUser, ...userProps });
+
+  const { email } = user;
+  await agent.post('/api/v1/users/sessions').send({ email, password });
+  return [agent, user];
+};
+//is this the logs in a user test// if so, what is each line doing and where should i call registerAndLogin//
+
 describe('backend-express-template routes', () => {
   beforeEach(() => {
     return setup(pool);
   });
+  //beforeEach resets database between each test
+
   afterAll(() => {
     pool.end();
   });
@@ -31,24 +44,9 @@ describe('backend-express-template routes', () => {
     });
   });
 
-  const registerAndLogin = async (userProps = {}) => {
-    const password = userProps.password ?? aUser.password;
-    const agent = request.agent(app);
-    const user = await UserService.create({ ...aUser, ...userProps });
-
-    const { email } = user;
-    await agent.post('/api/v1/users/sessions').send({ email, password });
-    return [agent, user];
-  };
-
-  it('returns the current user', async () => {
-    const [agent, user] = await registerAndLogin();
-    const me = await agent.get('/api/v1/secrets');
-
-    expect(me.body).toEqual({
-      ...user,
-      exp: expect.any(Number),
-      iat: expect.any(Number),
-    });
+  it('logs in a user', async () => {
+    await request(app).post('/api/v1/users').send(aUser); //creating the user
+    const res = await request(app).post('/api/v1/users/sessions').send(aUser);
+    expect(res.body).toEqual({ message: 'You have signed in' });
   });
 });
