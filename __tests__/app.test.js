@@ -51,4 +51,18 @@ describe('backend-express-template routes', () => {
     const res = await agent.post('/api/v1/users/sessions').send(aUser);
     expect(res.body).toEqual({ message: 'You have signed in' });
   });
+
+  it('returns a list of secrets', async () => {
+    const [agent] = await registerAndLogin(); //this lets us log in
+    const res = await agent.get('/api/v1/secrets'); //this is storing our cookie
+
+    expect(res.body).toEqual([
+      {
+        id: expect.any(String),
+        title: 'secret',
+        description: 'today is friday',
+        created_at: expect.any(String),
+      },
+    ]);
+  });
 });
