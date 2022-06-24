@@ -52,6 +52,12 @@ describe('backend-express-template routes', () => {
     expect(res.body).toEqual({ message: 'You have signed in' });
   });
 
+  it('log out a user', async () => {
+    const agent = await request.agent(app);
+    const res = await agent.delete('/api/v1/users/sessions').delete(aUser);
+    expect(res.body).toEqual({ message: 'You are  logged out' });
+  });
+
   it('returns a list of secrets', async () => {
     const [agent] = await registerAndLogin(); //this lets us log in
     const res = await agent.get('/api/v1/secrets'); //this is storing our cookie
