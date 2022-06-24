@@ -14,6 +14,7 @@ const aUser = {
 const registerAndLogin = async (userProps = {}) => {
   const password = userProps.password ?? aUser.password;
   const agent = request.agent(app);
+  console.log(agent);
   const user = await UserService.create({ ...aUser, ...userProps });
 
   const { email } = user;
@@ -45,8 +46,9 @@ describe('backend-express-template routes', () => {
   });
 
   it('logs in a user', async () => {
-    await request(app).post('/api/v1/users').send(aUser); //creating the user
-    const res = await request(app).post('/api/v1/users/sessions').send(aUser);
+    const agent = request.agent(app);
+    await agent.post('/api/v1/users').send(aUser); //creating the user
+    const res = await agent.post('/api/v1/users/sessions').send(aUser);
     expect(res.body).toEqual({ message: 'You have signed in' });
   });
 });
