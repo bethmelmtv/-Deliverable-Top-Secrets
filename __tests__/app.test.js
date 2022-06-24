@@ -54,8 +54,11 @@ describe('backend-express-template routes', () => {
 
   it('log out a user', async () => {
     const agent = await request.agent(app);
-    const res = await agent.delete('/api/v1/users/sessions').delete(aUser);
-    expect(res.body).toEqual({ message: 'You are  logged out' });
+    const res = await agent.delete('/api/v1/users/sessions');
+    expect(res.body).toEqual({
+      message: 'Signed out successfully',
+      success: true,
+    });
   });
 
   it('returns a list of secrets', async () => {
